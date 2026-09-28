@@ -43,8 +43,10 @@ road-guard-ai/
 
 ### Mobile (`apps/mobile/src/`)
 
-- **`lib/api.ts`** — REST client (Bearer token from AsyncStorage)
+- **`lib/api.ts`** — REST client; routes to `offlineApi` when `EXPO_PUBLIC_OFFLINE_MODE=true`
+- **`lib/offlineApi.ts`** — Standalone phone storage (AsyncStorage) for all API methods — no server needed
 - **`lib/offlineQueue.ts`** — Offline SOS queue
+- **`components/ErrorBoundary.tsx`** — Catches startup crashes in release APK
 - **`context/`** — Auth and theme providers
 - **`navigation/`** — Auth stack + main tabs
 - **`screens/`** — 30+ feature screens
@@ -87,7 +89,7 @@ Mobile App  ──REST/Socket.IO──►  Server  ◄──REST/Socket.IO──
 
 - **Server:** `tsx watch` (dev), `tsc` (build), `node dist/index.js` (start)
 - **Dashboard:** `vite` (dev), `tsc && vite build` (build)
-- **Mobile:** `expo start` (dev), `expo run:android/ios` (native), EAS profiles in `eas.json`
+- **Mobile:** `expo start` (dev), `npm run build:apk` / `scripts/build-apk.ps1` (release APK with embedded JS bundle)
 
 **Prerequisites:** Node.js 18+, npm. For mobile: Expo Go or emulator.
 
@@ -109,6 +111,7 @@ No automated deployment pipeline is configured. Typical manual flow:
 | `PORT` | Server | `3001` |
 | `JWT_SECRET` | Server auth | Dev fallback in code |
 | `EXPO_PUBLIC_API_URL` | Mobile | `http://localhost:3001` |
+| `EXPO_PUBLIC_OFFLINE_MODE` | Mobile | `true` — standalone mode, no backend required |
 | `VITE_API_URL` | Dashboard | `http://localhost:3001` |
 
 For physical devices, set `EXPO_PUBLIC_API_URL` to the machine's LAN IP (e.g. `http://192.168.x.x:3001`).
@@ -120,7 +123,7 @@ Dashboard dev server proxies `/api` → `http://localhost:3001`.
 Create these locally (never commit `.env` files):
 
 - **Server:** `PORT`, `JWT_SECRET`
-- **Mobile (`apps/mobile/.env`):** `EXPO_PUBLIC_API_URL`
+- **Mobile (`apps/mobile/.env`):** `EXPO_PUBLIC_OFFLINE_MODE=true` (standalone APK), optional `EXPO_PUBLIC_API_URL` for online mode
 - **Dashboard:** `VITE_API_URL` (optional; defaults to localhost)
 
 No `.env.example` file is checked in. See README for setup notes.
@@ -150,7 +153,7 @@ Default dashboard credentials (demo): `admin` / `admin123`, `operator` / `operat
 
 None. All server data lives in in-memory JavaScript structures. Client persistence:
 
-- Mobile: AsyncStorage (auth token, offline SOS queue)
+- Mobile: AsyncStorage (auth token, offline SOS queue, full session/data in standalone mode via `offlineApi.ts`)
 - Dashboard: localStorage (authority token, user, role)
 
 ## Error Handling
@@ -181,14 +184,16 @@ None. All server data lives in in-memory JavaScript structures. Client persisten
 
 ## Recent Changes
 
-- Removed prebuilt APK (`RoadGuardAI.apk`) from version control; added `*.apk` to `.gitignore`
-- Initial project workflow documentation created
-- Repository prepared for GitHub push
+- Added standalone offline mode (`offlineApi.ts`) — mobile app works without laptop/backend
+- Release APK build script outputs `RoadGuardAI.apk` with embedded JS bundle (`assembleRelease`)
+- Fixed APK startup crashes: disabled expo-notifications native import, added ErrorBoundary, `newArchEnabled=false`
+- Green "Standalone Mode" banner when `EXPO_PUBLIC_OFFLINE_MODE=true`
 
 ## Changelog
 
 | Date | Change |
 |------|--------|
+| 2026-09-28 | Standalone offline mobile mode, release APK build fixes, ErrorBoundary, safe notifications |
 | 2026-09-28 | Removed `apps/mobile/RoadGuardAI.apk` from repo; ignore `*.apk` build outputs |
 | 2026-09-28 | Created `docs/PROJECT_WORKFLOW.md`; initialized Git repo for GitHub |
 

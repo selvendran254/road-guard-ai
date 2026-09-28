@@ -26,13 +26,17 @@ export async function getSettings() {
 }
 
 export async function startBackgroundSafety() {
-  const settings = await getSettings();
-  if (settings.autoAccidentResponse === false) return;
+  try {
+    const available = await Accelerometer.isAvailableAsync();
+    if (!available) return;
 
-  Accelerometer.setUpdateInterval(200);
+    const settings = await getSettings();
+    if (settings.autoAccidentResponse === false) return;
 
-  subscription?.remove();
-  subscription = Accelerometer.addListener(async ({ x, y, z }) => {
+    Accelerometer.setUpdateInterval(500);
+
+    subscription?.remove();
+    subscription = Accelerometer.addListener(async ({ x, y, z }) => {
     const magnitude = Math.sqrt(x * x + y * y + z * z);
     const settings = await getSettings();
 
@@ -74,7 +78,10 @@ export async function startBackgroundSafety() {
         }
       }
     }
-  });
+    });
+  } catch {
+    // Sensors unavailable — skip silently
+  }
 }
 
 export function stopBackgroundSafety() {

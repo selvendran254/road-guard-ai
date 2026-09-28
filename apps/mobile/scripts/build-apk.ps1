@@ -40,13 +40,13 @@ if ($sdkmanager) {
     Write-Host "Tip: Open Android Studio > SDK Manager > SDK Tools > NDK (Side by side) 27.1.12297006" -ForegroundColor Yellow
 }
 
-Write-Host "Building debug APK (5-15 min first time)..."
+Write-Host "Building RELEASE APK with JS bundled inside (10-20 min)..."
 Push-Location $AndroidRoot
-.\gradlew.bat assembleDebug --no-daemon
+.\gradlew.bat assembleRelease --no-daemon
 Pop-Location
 
-$apk = Join-Path $AndroidRoot "app\build\outputs\apk\debug\app-debug.apk"
-$out = Join-Path $MobileRoot "RoadGuardAI-debug.apk"
+$apk = Join-Path $AndroidRoot "app\build\outputs\apk\release\app-release.apk"
+$out = Join-Path $MobileRoot "RoadGuardAI.apk"
 
 if (Test-Path $apk) {
     Copy-Item $apk $out -Force

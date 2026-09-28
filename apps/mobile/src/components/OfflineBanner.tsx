@@ -3,21 +3,31 @@ import { View, Text, StyleSheet } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { flushQueue } from '../lib/offlineQueue';
+import { isOfflineMode } from '../lib/api';
 
 export default function OfflineBanner() {
-  const [offline, setOffline] = useState(false);
+  const [noInternet, setNoInternet] = useState(false);
   const { t } = useTranslation();
+  const standalone = isOfflineMode();
 
   useEffect(() => {
+    if (standalone) return;
     const unsub = NetInfo.addEventListener((state) => {
-      const isOffline = !state.isConnected;
-      setOffline(!!isOffline);
+      setNoInternet(!state.isConnected);
       if (state.isConnected) flushQueue();
     });
     return () => unsub();
-  }, []);
+  }, [standalone]);
 
-  if (!offline) return null;
+  if (standalone) {
+    return (
+      <View style={[styles.banner, styles.standalone]}>
+        <Text style={styles.text}>📱 Standalone Mode — No laptop/server needed</Text>
+      </View>
+    );
+  }
+
+  if (!noInternet) return null;
 
   return (
     <View style={styles.banner}>
@@ -28,5 +38,6 @@ export default function OfflineBanner() {
 
 const styles = StyleSheet.create({
   banner: { backgroundColor: '#D97706', padding: 8, alignItems: 'center' },
+  standalone: { backgroundColor: '#059669' },
   text: { color: '#FFF', fontWeight: '600', fontSize: 13 },
 });
