@@ -181,6 +181,7 @@ None. All server data lives in in-memory JavaScript structures. Client persisten
 
 ## Recent Changes
 
+- Removed prebuilt APK (`RoadGuardAI.apk`) from version control; added `*.apk` to `.gitignore`
 - Initial project workflow documentation created
 - Repository prepared for GitHub push
 
@@ -188,6 +189,7 @@ None. All server data lives in in-memory JavaScript structures. Client persisten
 
 | Date | Change |
 |------|--------|
+| 2026-09-28 | Removed `apps/mobile/RoadGuardAI.apk` from repo; ignore `*.apk` build outputs |
 | 2026-09-28 | Created `docs/PROJECT_WORKFLOW.md`; initialized Git repo for GitHub |
 
 ## Last Updated
