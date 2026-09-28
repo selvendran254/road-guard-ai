@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "RoadGuard AI",
+    "slug": "roadguard-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#DC2626"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.roadguard.ai"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#DC2626"
+      },
+      "package": "com.roadguard.ai",
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-location",
+      "expo-camera",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow RoadGuard AI to detect possible accidents using motion sensors."
+        }
+      ]
+    ]
+  }
+}
